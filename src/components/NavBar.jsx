@@ -6,100 +6,96 @@ import React, { useState } from "react";
 const NavBar = ({ com }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-  };
+  function dropdown() {
+    document.querySelector("#submenu").classList.toggle("hidden");
+    document.querySelector("#arrow").classList.toggle("rotate-0");
+  }
 
-  const NavLinks = [
-    {
-      name: "dashboard",
-      path: "/",
-    },
-    {
-      name: "tables",
-      path: "/Tables",
-    },
-    {
-      name: "new",
-      path: "/NewTask",
-    },
-    {
-      name: "About",
-      path: "http://iccreativa.com/",
-    },
-  ];
+  function openSidebar() {
+    setSidebarOpen(!isSidebarOpen);
+  }
 
   return (
     <div>
       {/* Overlay */}
-      {isSidebarOpen && (
-        <div
-          onClick={toggleSidebar}
-          className="fixed inset-0 z-50 bg-black opacity-50"
-        ></div>
-      )}
-
       <div className="relative min-h-screen md:flex">
-        {/* mobile menu bar */}
-        <div className="bg-gray-800 text-gray-100 flex justify-between md:hidden">
-
-          {/* logo */}
-          <Link href="/" className="block p-4 text-white font-bold">
-            img
-          </Link>
-
-          {/* mobile menu button */}
-          <button
-            className="mobile-menu-button p-4 focus:outline-none focus:bg-gray-700"
-            onClick={toggleSidebar}
-          >
-            <svg
-              className="h-5 w-5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        </div>
 
         {/* sidebar */}
-        <div
-          className={`${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-80"
-          } bg-white shadow-2xl fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-lg transition-transform duration-300 :relative md:translate-x-0 border border-gray-300`}
+        <span
+          className="absolute text-white text-4xl top-5 right-2 cursor-pointer z-50 md:hidden"
+          onClick={openSidebar}
         >
-          {/* title */}
-          <div className="relative">
-            <Link className="py-6 px-8 text-center" href="#/">
-              <h6 className="block antialiased tracking-normal font-sans text-base font-bold leading-relaxed text-blue-gray-900">
-                ICC
-              </h6>
-            </Link>
+          <i className="bi bi-filter-left px-2 bg-gray-900 rounded-md"></i>
+        </span>
+        <div
+          className={`sidebar fixed top-0 bottom-0 lg:left-0 p-2 w-[300px] overflow-y-auto text-center lg:block bg-gray-900 z-10 md:block ${isSidebarOpen ? '' : 'hidden'}`}
+        >
+          <div className="text-gray-100 text-xl">
+            <div className="p-2.5 mt-1 flex items-center">
+              <i className="bi bi-app-indicator px-2 py-1 rounded-md bg-blue-600"></i>
+              <h1 className="font-bold text-gray-200 text-[15px] ml-3">TailwindCSS</h1>
+              <i
+                className="bi bi-x cursor-pointer ml-28 lg:hidden"
+                onClick={openSidebar}
+              ></i>
+            </div>
+            <div className="my-2 bg-gray-600 h-[1px]"></div>
           </div>
-
-          {/* nav */}
-          <nav className="m-4">
-            {NavLinks.map((link, index) => {
-              return (
-                <ul key={index} onClick={toggleSidebar}>
-                  <Link
-                    href={link.path}
-                    className="mb-5 block py-2.5 px-4 transition duration-200 rounded-xl bg-white text-gray-700 hover:bg-gray-200 border border-blue-gray-100 shadow-sm"
-                  >
-                    <li>{link.name}</li>
-                  </Link>
-                </ul>
-              );
-            })}
-          </nav>
+          <div
+            className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white"
+          >
+            <i className="bi bi-search text-sm"></i>
+            <input
+              type="text"
+              placeholder="Search"
+              className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
+            />
+          </div>
+          <div
+            className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+          >
+            <i className="bi bi-house-door-fill"></i>
+            <span className="text-[15px] ml-4 text-gray-200 font-bold">Home</span>
+          </div>
+          <div
+            className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+          >
+            <i className="bi bi-bookmark-fill"></i>
+            <span className="text-[15px] ml-4 text-gray-200 font-bold">Bookmark</span>
+          </div>
+          <div className="my-4 bg-gray-600 h-[1px]"></div>
+          <div
+            className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+            onClick={dropdown}
+          >
+            <i className="bi bi-chat-left-text-fill"></i>
+            <div className="flex justify-between w-full items-center">
+              <span className="text-[15px] ml-4 text-gray-200 font-bold">Chatbox</span>
+              <span className="text-sm rotate-180" id="arrow">
+                <i className="bi bi-chevron-down"></i>
+              </span>
+            </div>
+          </div>
+          <div
+            className="text-left text-sm mt-2 w-4/5 mx-auto text-gray-200 font-bold"
+            id="submenu"
+          >
+            <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
+              Social
+            </h1>
+            <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
+              Personal
+            </h1>
+            <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
+              Friends
+            </h1>
+          </div>
+          <div
+            className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+          >
+            <i className="bi bi-box-arrow-in-right"></i>
+            <span className="text-[15px] ml-4 text-gray-200 font-bold">Logout</span>
+          </div>
         </div>
 
         {/* content */}
