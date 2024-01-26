@@ -1,8 +1,28 @@
+"use client"
 import Card from "@/components/Card";
 import Table from "@/components/Table";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
+
+ 
+  const [list, setList] = useState([]);
+  //aqui va a ir la API 
+  useEffect(() => {
+    axios({
+      header: 'Content-Type: application/json',
+      url: "https://localhost:7093/api/clientes",
+    })
+      .then((response) => {
+        setList(response.data);
+        console.log(response.data)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [setList]);
+
   return (
     <div>
       <section className="container mx-auto p-6 font-mono">
@@ -18,8 +38,15 @@ const page = () => {
                 </tr>
               </thead>
               <tbody className="bg-white">
-                <Table />
-                
+                {list.map((item) => (
+                  <Table key={item.id_helpdesk}
+                  name={item.solicitud_id_usuario}
+                  empresa={item.id_empresa}
+                  asunto={item.asunto}
+                  estatus={item.estatus}
+                  fecha={item.solicitud_fecha}
+                   />
+                ))}
               </tbody>
             </table>
           </div>
