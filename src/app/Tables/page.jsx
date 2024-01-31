@@ -1,27 +1,32 @@
 "use client"
-import Card from "@/components/Card";
 import Table from "@/components/Table";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const page = () => {
+const Page = () => {
+  const [postData, setPostData] = useState([]); // Declare state variable for posts
 
- 
-  const [list, setList] = useState([]);
-  //aqui va a ir la API 
+  const url = "https://localhost:7093/api/clientes";
+  const requestData = {
+    "id_empresa": "",
+    "modulo": "",
+    "tipo": "",
+    "estatus": "",
+    "solicitud_id_usuario": "",
+    "fecha_inicio": "2024-01-01",
+    "fecha_fin": "2024-01-31",
+    "tipo_fecha": "SOLICITUD"
+  };
+
   useEffect(() => {
-    axios({
-      header: 'Content-Type: application/json',
-      url: "https://localhost:7093/api/clientes",
-    })
+    axios.post(url, requestData)
       .then((response) => {
-        setList(response.data);
-        console.log(response.data)
+        setPostData(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error("Error fetching data:", error);
       });
-  }, [setList]);
+  }, []);
 
   return (
     <div>
@@ -38,14 +43,15 @@ const page = () => {
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {list.map((item) => (
-                  <Table key={item.id_helpdesk}
-                  name={item.solicitud_id_usuario}
-                  empresa={item.id_empresa}
-                  asunto={item.asunto}
-                  estatus={item.estatus}
-                  fecha={item.solicitud_fecha}
-                   />
+                {postData.map((response) => (
+                  <Table
+                    key={response.id_helpdesk}
+                    name={response.solicitud_id_usuario}
+                    empresa={response.id_empresa}
+                    asunto={response.asunto}
+                    estatus={response.estatus}
+                    fecha={response.solicitud_fecha}
+                  />
                 ))}
               </tbody>
             </table>
@@ -56,4 +62,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
