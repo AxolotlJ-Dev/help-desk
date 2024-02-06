@@ -1,0 +1,198 @@
+/****************************
+sp_Inserta_ImagenesApp ABC
+****************************/
+USE [VOficina_patron]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_Inserta_ImagenesApp]    Script Date: 02/02/2024 03:56:14 p. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	
+	select * -- delete s
+	from imagenes_app s(nolock) where s.movimiento = '0002844' and s.tabla = 'INE REVERSO'
+	select * from crm_tipos where grupo like '%doctos%'
+	select * from clientes where nombre like '%prueba%'
+	select * from articulos
+	01000200001536
+
+	EXEC sp_Inserta_ImagenesApp 'PATRON','FOTOS DE ARTICULO','01000200001536',1,'ICC-ALI','prueba','jpg'
+
+*/
+ALTER PROCEDURE [dbo].[sp_Inserta_ImagenesApp](
+	 @id_empresa		VARCHAR(12)
+	,@tabla				VARCHAR(70)
+	,@movimiento		VARCHAR(25)
+	,@renglon			SMALLINT
+	,@id_usuario		VARCHAR(12)
+	,@foto				IMAGE
+	,@extencion			VARCHAR(10) = 'jpg'
+)AS
+BEGIN
+	DECLARE @regresa  INT		  
+		   ,@msj	  VARCHAR(250)
+		   ,@registro INT
+		   ,@estatus1 VARCHAR(12)		= 'Sin Cargar'
+		   ,@observacion VARCHAR(250)	= ''
+
+	BEGIN TRY
+		--IF (SELECT
+		--	  COUNT(*)
+		--	  FROM imagenes_app SI (NOLOCK)
+		--		WHERE	SI.id_empresa		=	@id_empresa
+		--		AND		SI.tabla			=	@tabla
+		--		AND		SI.movimiento		=	@movimiento
+		--		AND		SI.renglon			=	@renglon
+		--  > 0
+		--  BEGIN
+			IF DATALENGTH (@foto) > 0
+				BEGIN 
+				SET @estatus1 = 'Cargado'
+				END
+			
+				SELECT	@registro	 =	COUNT(*)
+				FROM imagenes_app	SI(NOLOCK)
+				LEFT JOIN clientes						C(NOLOCK)
+					ON C.id_cliente		=	SI.movimiento
+				LEFT JOIN articulos						A(NOLOCK)
+					ON A.articulo		=	SI.movimiento
+				LEFT JOIN credito_vales					CV(NOLOCK)
+					ON CV.autonumsuc	=	SI.movimiento
+				WHERE	SI.id_empresa		=	@id_empresa
+				AND		SI.tabla			=	@tabla
+				AND		SI.movimiento		=	@movimiento
+				AND		SI.renglon			=	@renglon
+
+
+			BEGIN TRAN
+			IF @registro > 0
+				BEGIN
+					UPDATE	 SI SET Si.foto	=	@foto
+							,SI.extencion	=	@extencion
+							,SI.estatus1	=   @estatus1
+							,SI.observacion	=   @observacion
+					FROM	imagenes_app SI(NOLOCK)
+					WHERE	SI.id_empresa	=	@id_empresa
+					AND		SI.tabla		=	@tabla
+					AND		SI.movimiento	=	@movimiento
+					AND		SI.renglon		=	@renglon
+
+				SET @regresa = 2
+				SET @msj     = 'Actualizado correctamente'
+				END
+			ELSE
+			BEGIN
+				INSERT INTO imagenes_app
+						(id_empresa		,tabla		,movimiento		,renglon	,fecha		,id_usuario		,foto	,fum		,extencion	,estatus1	,observacion)
+				VALUES	(@id_empresa	,@tabla		,@movimiento	,@renglon	,GETDATE()	,@id_usuario	,@foto	,GETDATE()	,@extencion	,@estatus1	,@observacion)
+
+			END
+			
+			SET @regresa = 1
+			SET @msj     = 'Agregado correctamente'
+			COMMIT
+		--END
+		--ELSE
+		--	BEGIN
+		--	SET @regresa = 0
+		--	SET @msj     = 'No puedes agregar un archivo sin un registro.'
+		--END
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0
+		BEGIN
+			ROLLBACK
+		END
+		SET @regresa	=	0
+		SET @msj		=	ERROR_MESSAGE()
+	END CATCH
+	SELECT	 regresa	 = @regresa
+			,msj		 = @msj
+			,id_empresa	 = @id_empresa
+			,tabla		 = @tabla
+			,movimiento  = @movimiento
+			,renglon	 = @renglon
+			,id_usuario  = @id_usuario
+			,foto		 = @foto
+			,extencion   = @extencion
+			,estatus1    = @estatus1
+			,observacion = @observacion
+END
+
+
+
+
+/****************************
+sp_Recupera_ImagenesApp SEL
+****************************/
+USE [VOficina_patron]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_Recupera_ImagenesApp]    Script Date: 02/02/2024 03:56:40 p. m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+	Ivan Valdes Acosta
+	21 Abril 2020
+	muestra foto del deposito
+	select * from imagenes_app where movimiento = '0002018'
+	EXEC sp_Recupera_ImagenesApp 'PATRON','','6833',1, 'ARTICULO'
+*/
+ALTER PROCEDURE [dbo].[sp_Recupera_ImagenesApp](
+	 @id_empresa	VARCHAR(12)
+	,@tabla			VARCHAR(50)
+	,@movimiento	VARCHAR(25)
+	,@renglon		SMALLINT
+	,@tipo			VARCHAR(50) 
+)AS 
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE      @regresa	INT		= 1
+				,@msj		VARCHAR(25) = 'EXITO' 
+			    ,@grupo		VARCHAR(50)
+
+					SET @grupo = CASE WHEN @tipo = 'CLIENTE'	THEN 'DOCTOS_CLIENTE'
+        							  WHEN @tipo = 'ARTICULO'	THEN 'DOCTOS_ARTICULO'
+        							  WHEN @tipo = 'BOLETA'		THEN 'DOCTOS_BOLETA'
+									  WHEN @tipo = 'MANIFIESTO'	THEN 'DOCTOS_PRESTAMO'
+								ELSE ''		END
+													   
+	DECLARE  @resultado AS TABLE(
+			 id_tipo    SMALLINT
+			,tipo       VARCHAR(50)
+			,grupo      VARCHAR(50))
+
+	INSERT INTO @resultado
+	SELECT ct.id_tipo, ct.tipo, ct.grupo FROM crm_tipos ct
+	WHERE grupo = @grupo
+
+
+			SELECT  regresa			= @regresa
+					,msj			= @msj
+					,id_empresa		= ISNULL(SI.id_empresa ,@id_empresa)   
+					,valor			= ISNULL(SI.tabla, R.tipo) 
+					,movimiento		= ISNULL(C.id_cliente, @movimiento)
+					,renglon		= ISNULL(SI.renglon, 1)
+					,fecha			= ISNULL(SI.fecha, '1990-01-01')
+					,id_usuario		= ISNULL(SI.id_usuario, '')
+					,foto			= ISNULL(SI.foto, '')
+					,fum			= ISNULL(SI.fum, '1990-01-01')
+					,extencion		= ISNULL(SI.extencion, '')
+					,estatus1		= ISNULL(SI.estatus1, 'Sin cargar')
+					,observacion	= ISNULL(SI.observacion, '') -- select *
+					,tipo			= @tipo
+			FROM @resultado R
+    		LEFT JOIN imagenes_app	SI(NOLOCK)
+				ON R.tipo = SI.tabla
+				AND SI.id_empresa	= CASE WHEN LEN(@id_empresa)	> 0 THEN @id_empresa    ELSE SI.id_empresa  END
+				AND	SI.movimiento	= @movimiento--CASE WHEN LEN(@movimiento)	> 0 THEN @movimiento	ELSE SI.movimiento	END
+				AND	SI.renglon		= 1
+			LEFT JOIN clientes						C(NOLOCK)
+				ON C.id_cliente		=	SI.movimiento
+			LEFT JOIN articulos						A(NOLOCK)
+				ON A.articulo		=	SI.movimiento
+			LEFT JOIN credito_vales					CV(NOLOCK)
+				ON CV.autonumsuc	=	SI.movimiento
+END

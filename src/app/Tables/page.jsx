@@ -1,6 +1,6 @@
 "use client"
-import Table from "@/components/Table";
 import axios from "axios";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const Page = () => {
@@ -13,8 +13,8 @@ const Page = () => {
     "tipo": "",
     "estatus": "",
     "solicitud_id_usuario": "",
-    "fecha_inicio": "2024-01-01",
-    "fecha_fin": "2024-01-31",
+    "fecha_inicio": "1900-01-01",
+    "fecha_fin": "2026-01-31",
     "tipo_fecha": "SOLICITUD"
   };
 
@@ -22,11 +22,13 @@ const Page = () => {
     axios.post(url, requestData)
       .then((response) => {
         setPostData(response.data);
+        // console.log(response.data)
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
 
   return (
     <div>
@@ -36,7 +38,7 @@ const Page = () => {
             <table className="w-full">
               <thead>
                 <tr className="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                  <th className="text-center px-4 py-3">Compañia</th>
+                  <th className="text-center px-4 py-3">Compañia </th>
                   <th className="text-center px-4 py-3">Asunto</th>
                   <th className="text-center px-4 py-3">Estatus</th>
                   <th className="text-center px-4 py-3">Fecha</th>
@@ -44,17 +46,20 @@ const Page = () => {
               </thead>
               <tbody className="bg-white">
                 {postData.map((response) => (
-                  <Table
-                    key={response.id_helpdesk}
-                    name={response.solicitud_id_usuario}
-                    empresa={response.id_empresa}
-                    asunto={response.asunto}
-                    estatus={response.estatus}
-                    fecha={response.solicitud_fecha}
-                  />
+                  <tr key={response.id_helpdesk}>
+                    <td className="text-center px-4 py-3">{response.id_empresa}</td>
+                    <td className="text-center px-4 py-3">
+                      <Link href={`/Tables/${response.id_helpdesk}`}>
+                        {response.asunto}
+                      </Link>
+                    </td>
+                    <td className="text-center px-4 py-3">{response.estatus}</td>
+                    <td className="text-center px-4 py-3">{response.solicitud_fecha}</td>
+                  </tr>
                 ))}
               </tbody>
             </table>
+            
           </div>
         </div>
       </section>
