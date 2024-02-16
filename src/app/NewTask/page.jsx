@@ -3,45 +3,59 @@
 import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
 
 const page = () => {
-
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm();
 
   const onSubmit = (data) => {
     const additionalData = {
-      pantalla: '',
-      movimiento: '',
-      estatus: 'ABIERTO',
-      atencion_id_usuario: '',
-    }; 
-  
+      pantalla: "",
+      movimiento: "",
+      estatus: "ABIERTO",
+      atencion_id_usuario: "",
+      msj: "",
+    };
+
     const dataToSend = { ...data, ...additionalData };
-  
-    console.log('Data to send:', dataToSend);
-  
-    axios.post(
-      'https://localhost:7093/api/InsertarCliente',
+
+    console.log("Data to send:", dataToSend);
+
+    const promise = axios.post(
+      "https://localhost:7093/api/InsertarCliente",
       dataToSend,
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
-    )
-    .then(response => {
-      console.log('Respuesta del Servidor:', response.data);
-    })
-    .catch(error => {
-      console.error('Error al enviar la solicitud:', error.response.data);
+    );
+
+    // .then(response => {
+    //   console.log('Respuesta del Servidor:', response.data);
+    //   toast.success('Tarea Creada');
+
+    // })
+    // .catch(error => {
+    //   console.error('Error al enviar la solicitud:', error.response);
+    //   toast.error("Error al enviar la solicitud: " + error.response.status);
+    // });
+
+    toast.promise(promise, {
+      loading: "Cargando...",
+      //success: (success) => success.data.regresa > 0 : "EXITO" ? success.data.msj,
+      success: "exito: ",
+      error: (error) => "Error: " + error.toString(),
     });
+
+    console.log(promise);
+    reset();
   };
-
-
 
   return (
     <div>
@@ -91,20 +105,24 @@ const page = () => {
           {/* Tipo */}
           <div>
             <label
-              htmlFor="tipo"
+              htmlFor="Tipos"
               className="block text-sm font-semibold leading-6 text-black"
             >
               Tipo
             </label>
             <div className="mt-2.5">
-              <input
-                type="text"
-                id="tipo"
-                autoComplete="family-name"
-                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm shadow-blue-500 ring-1 ring-inset ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
-                {...register("tipo", { required: true })}
-              />
-              {errors.tipo && <p className="text-red-900"></p>}
+              <select
+                id="Tipos"
+                className="block w-full rounded-md border-0 px-3.5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset shadow-blue-500 ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
+                {...register("Tipo", { required: true })}
+              >
+                <option value="" disabled>Selecciona El Tipo</option>
+                <option value="Reportes De Actividades">Reportes De Actividades</option>
+                <option value="Nuevo Requerimiento">Nuevo Requerimiento</option>
+                <option value="Dudas Sobre Software">Dudas Sobre Software</option>
+
+
+              </select>
             </div>
           </div>
 
@@ -128,7 +146,7 @@ const page = () => {
           </div>
 
           {/* pantalla */}
-          {/* <div>
+          <div>
             <label
               htmlFor="pantalla"
               className="block text-sm font-semibold leading-6 text-black"
@@ -144,7 +162,7 @@ const page = () => {
                 {...register("pantalla", { required: true })}
               />
             </div>
-          </div> */}
+          </div>
 
           {/* Movimiento */}
           {/* <div>
@@ -200,7 +218,7 @@ const page = () => {
               ></textarea>
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-white">
                 Image
               </label>
@@ -237,7 +255,7 @@ const page = () => {
                       dark:file:bg-blue-500
                       dark:hover:file:bg-blue-400"
                         type="file"
-                        {...register("file", { required: true })}
+                        {...register("file", { required: false })}
                       />
                     </label>
                   </div>
@@ -245,7 +263,7 @@ const page = () => {
                   <p className="text-xs text-white">PNG, JPG, GIF up to 10MB</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="mt-10">
@@ -257,6 +275,8 @@ const page = () => {
           </button>
         </div>
       </form>
+
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };

@@ -37,7 +37,7 @@ const NavBar = ({ com }) => {
 
         </span>
         <div
-          className={`sidebar fixed top-0 bottom-0 lg:left-0 p-2 w-[300px] overflow-y-auto text-center lg:block bg-gray-900 z-10 md:block ${
+          className={` sidebar fixed top-0 bottom-0 lg:left-0 p-2 w-[300px] overflow-y-auto text-center lg:block bg-gray-900 z-10 md:block ${
             isSidebarOpen ? "" : "hidden"
           }`}
         >
@@ -50,15 +50,7 @@ const NavBar = ({ com }) => {
             </div>
             <div className="my-2 bg-gray-600 h-[1px]"></div>
           </div>
-          <div className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white">
-            <i className="bi bi-search text-sm"></i>
-            <input
-              type="text"
-              placeholder="Search"
-              className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
-            />
-          </div>
-          <Link href="/">
+          <Link onClick={openSidebar} href="/">
             <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
               <IoHomeSharp />
               <span className="text-[15px] ml-4 text-gray-200 font-bold">
@@ -66,15 +58,15 @@ const NavBar = ({ com }) => {
               </span>
             </div>
           </Link>
-          <Link href="/NewTask">
-            <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
+          {/*<Link onClick={openSidebar} href="/NewTask">
+             <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
               <FaTable />
               <span className="text-[15px] ml-4 text-gray-200 font-bold">
                 Nueva Tarea
               </span>
-            </div>
-          </Link>
-          <Link href="Tables">
+            </div> 
+          </Link>*/}
+          <Link onClick={openSidebar} href="/Tables">
             <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
               <FaTasks />
               <span className="text-[15px] ml-4 text-gray-200 font-bold">
@@ -120,7 +112,7 @@ const NavBar = ({ com }) => {
         </div>
 
         {/* content */}
-        <div className="flex-1 text-2md font-bold p-4 md:ml-80">{com}</div>
+        <div className="flex-1 text-2md font-bold p-4 md:ml-80 ">{com}</div>
       </div>
     </div>
   );
