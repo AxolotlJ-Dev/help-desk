@@ -1,5 +1,6 @@
 "use client";
 
+import NavBar from "@/components/NavBar";
 import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -59,6 +60,9 @@ const page = () => {
 
   return (
     <div>
+      <NavBar />
+      <div className="flex-1 text-2md font-bold p-4 md:ml-80 ">
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="mx-auto mt-16 max-w-xl sm:mt-20"
@@ -115,7 +119,7 @@ const page = () => {
                 id="Tipos"
                 className="block w-full rounded-md border-0 px-3.5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset shadow-blue-500 ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
                 {...register("Tipo", { required: true })}
-              >
+                >
                 <option value="" disabled>Selecciona El Tipo</option>
                 <option value="Reportes De Actividades">Reportes De Actividades</option>
                 <option value="Nuevo Requerimiento">Nuevo Requerimiento</option>
@@ -277,6 +281,7 @@ const page = () => {
       </form>
 
       <Toaster position="top-right" reverseOrder={false} />
+                </div>
     </div>
   );
 };

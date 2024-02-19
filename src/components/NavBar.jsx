@@ -11,7 +11,7 @@ import { CiLogout } from "react-icons/ci";
 import { FaCircleInfo } from "react-icons/fa6";
 
 
-const NavBar = ({ com }) => {
+const NavBar = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   function dropdown() {
@@ -26,7 +26,7 @@ const NavBar = ({ com }) => {
   return (
     <div>
       {/* Overlay */}
-      <div className="relative min-h-screen md:flex">
+      <div className="relative md:flex">
         {/* sidebar */}
         {/* Este es el boton para mostrar o ocultar el nav */}
         <span
@@ -112,7 +112,7 @@ const NavBar = ({ com }) => {
         </div>
 
         {/* content */}
-        <div className="flex-1 text-2md font-bold p-4 md:ml-80 ">{com}</div>
+        {/* <div className="flex-1 text-2md font-bold p-4 md:ml-80 "></div> */}
       </div>
     </div>
   );

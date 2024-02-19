@@ -1,51 +1,44 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { FaLock, FaUser } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 
 const Login = () => {
+
+  
   const { register, handleSubmit, reset } = useForm();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  var router = useRouter()
 
   const onSubmit = (data) => {
     const formData = {
-        id_empresa: "ICC",
-        app: "VOficina.Integral",
-        id_usuario: data.id_usuario,
-        pass: data.pass,
-        Version: "5.0",
+      id_empresa: "CRECE",
+      id_usuario: data.id_usuario,
+      pass: data.pass,
     };
 
-    console.log(data.id_usuario)
-    console.log(data.pass)
-    // localStorage.setItem("formularioData", JSON.stringify(data));
-    // localStorage.setItem("isLoggedIn", true);
-
-    axios.post(
-        "https://voficinatrafico.iccreativa.com/crecepruebaapp/WebServices/Seguridad.asmx/App_Login",
+    axios
+      .post(
+        "https://localhost:7093/api/App_Login",
         formData,
         {
-            headers: {
-                "Content-Type": "application/json",
-            },
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-    )
-    .then(response => {
-        localStorage.setItem("formularioData", JSON.stringify(data));
-        localStorage.setItem("isLoggedIn", "true");
-        setIsLoggedIn(true);
-        router.push("/");
-        console.log(response)
-    })
-    .catch(error => {
+      )
+      .then((response) => {
+        localStorage.setItem("formularioData", JSON.stringify(response.data));
+        // console.log(response.data);
+        reset();
+      })
+      .catch((error) => {
         console.error("Error al iniciar sesión:", error);
-    });
-};
+      });
+  };
 
+
+  
 
   return (
     <div className="h-screen md:flex">
@@ -84,7 +77,7 @@ const Login = () => {
               type="text"
               id="id_usuario"
               placeholder="Usuario"
-              {...register('id_usuario', { required: true })}
+              {...register("id_usuario", { required: true })}
             />
           </div>
 
@@ -95,9 +88,9 @@ const Login = () => {
               type="text"
               id="pass"
               placeholder="Contraseña"
-              {...register('pass', { required: true })}
+              {...register("pass", { required: true })}
             />
-          </div>
+          </div>         
           <button
             type="submit"
             className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2"

@@ -3,7 +3,6 @@ import React from 'react';
 
 const Card = () => {
   return (
-    
         
         <div className="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 border border-gray-400 shadow-sm">
           <div className="bg-clip-border mt-4 mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-gray-900 to-gray-800 text-white shadow-gray-900/20 absolute grid h-12 w-12 place-items-center">

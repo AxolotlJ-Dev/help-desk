@@ -1,15 +1,14 @@
 "use client";
+import NavBar from "@/components/NavBar";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { IoIosSend } from "react-icons/io";
 
 const Page = ({ params }) => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-  } = useForm();
+  const { register, handleSubmit, reset, watch } = useForm();
+
+  
 
   const idUsuarioActual = "ICC-ALI";
 
@@ -47,7 +46,7 @@ const Page = ({ params }) => {
 
   const requestDataMensajes = {
     id_helpdesk: params.id,
-    id_usuario: "ICC-ALI",
+    id_usuario: idUsuarioActual,
   };
 
   useEffect(() => {
@@ -60,7 +59,7 @@ const Page = ({ params }) => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+  }, [sendMensaje]);
 
   // send menssage
   const onSubmit = (data) => {
@@ -68,8 +67,8 @@ const Page = ({ params }) => {
       id_helpdesk: params.id,
       id_helpdeskdet: 0,
       tipo: "",
-      id_usuario: "ICC-ALI",
-      estatus: ""
+      id_usuario: idUsuarioActual,
+      estatus: "",
     };
 
     const dataToSend = { ...data, ...additionalData };
@@ -83,6 +82,7 @@ const Page = ({ params }) => {
         },
       })
       .then((response) => {
+        setSendMensaje(response.data);
         console.log("Respuesta del Servidor:", response.data);
       })
       .catch((error) => {
@@ -93,6 +93,8 @@ const Page = ({ params }) => {
 
   return (
     <div>
+      <NavBar />
+      <div className=" flex-1 text-2md font-bold p-4 md:ml-80 ">
       <div className="font-sans">
         <div className="container mx-auto py-8 px-4">
           <h2 className="text-xl font-semibold mt-4 mb-2">Informacion</h2>
@@ -134,77 +136,76 @@ const Page = ({ params }) => {
 
       <div className="container mx-auto py-8 px-4">
         <h2 className="text-xl font-semibold mt-4 mb-2">Mensajes</h2>
-        <div className="bg-white p-6 rounded-lg border border-black shadow-lg">
-          <hr />
-          <div className="w-3/3 border flex flex-col">
-            <div className="flex-1 overflow-auto">
-              <div className="flex justify-center mb-2">
-                <div className="rounded py-2 px-4">
-                  <p className="text-sm uppercase">February 20, 2018</p>
-                </div>
-              </div>
-
-              <div className="flex justify-center mb-4">
-                <div className="rounded py-2 px-4">
-                  <p className="text-xs">
-                    Messages to this chat and calls are now secured with
-                    end-to-end encryption. Tap for more info.
-                  </p>
-                </div>
-              </div>
-
-              <div className="py-2 px-3">
-                {mensajes.map((response, index) => (
-                  <div
-                    className={`flex mb-2 ${
-                      response.id_usuario !== idUsuarioActual
-                        ? ""
-                        : "justify-end"
-                    } `}
-                    key={index}
-                  >
-                    <div
-                      className={`rounded py-2 px-3  ${
-                        response.id_usuario !== idUsuarioActual
-                          ? "bg-green-400"
-                          : "bg-red-400"
-                      } `}
-                    >
-                      {response.id_usuario !== idUsuarioActual ? (
-                        <p className="text-sm">{response.id_usuario}</p>
-                      ) : (
-                        ""
-                      )}
-
-                      <p>{response.mensaje}</p>
-                      <p className="text-right text-xs text-grey-dark mt-1">
-                        {response.estatus}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+        <div className="bg-white rounded-lg border border-black shadow-lg">
+          <div className="flex-1 overflow-auto">
+            <div className="flex justify-center mb-2">
+              <div className="rounded py-2 px-4">
+                <p className="text-sm uppercase">February 20, 2018</p>
               </div>
             </div>
 
-            <form
-              className="bg-grey-lighter px-4 py-4 flex items-center"
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <div className="flex-1 ">
-                <input
-                  className="w-full border border-gray-700 rounded px-2 py-2"
-                  type="text"
-                  id="mensaje"
-                  {...register("mensaje", { required: true })}
-                />
+            <div className="flex justify-center mb-4">
+              <div className="rounded py-2 px-4">
+                <p className="text-xs text-center">
+                  Somos una empresa con más de 20 años construyendo soluciones
+                  robustas para los negocios de México, dedicada a la
+                  Consultoría y el Desarrollo de Software Empresarial, para
+                  brindar las mejores innovaciones tecnologicas.
+                </p>
               </div>
-              <button className="text-3xl ml-2">
-                <IoIosSend />
-              </button>
-            </form>
+            </div>
+
+            <div className="py-2 px-3">
+              {mensajes.map((response, index) => (
+                <div
+                  className={`flex mb-2 ${
+                    response.id_usuario !== idUsuarioActual ? "" : "justify-end"
+                  } `}
+                  key={index}
+                >
+                  <div
+                    className={`rounded py-2 px-3  ${
+                      response.id_usuario !== idUsuarioActual
+                        ? "bg-green-400 mr-6"
+                        : "bg-red-400 ml-6"
+                    } `}
+                  >
+                    {response.id_usuario !== idUsuarioActual ? (
+                      <p className="text-sm">{response.id_usuario}</p>
+                    ) : (
+                      ""
+                    )}
+
+                    <p>{response.mensaje}</p>
+                    <p className="text-right text-xs text-grey-dark mt-1">
+                      {response.estatus}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+
+          <form
+            className="flex items-center m-6"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div className="flex-1 ">
+              <input
+                className="w-full border border-gray-700 rounded px-2 py-2"
+                type="text"
+                id="mensaje"
+                {...register("mensaje", { required: true })}
+              />
+            </div>
+            <button className="text-3xl ml-2">
+              <IoIosSend />
+            </button>
+          </form>
         </div>
       </div>
+    </div>
+
     </div>
   );
 };

@@ -1,4 +1,5 @@
 "use client";
+import NavBar from "@/components/NavBar";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -74,6 +75,9 @@ const Page = () => {
 
   return (
     <div>
+      <NavBar />
+      <div className="flex-1 text-2md font-bold p-4 md:ml-80 ">
+
       <section className="container mx-auto p-6 font-mono">
         <div className="flex flex-wrap mb-4">
           <input
@@ -107,7 +111,7 @@ const Page = () => {
             value={filterCriteria.fecha_inicio}
             onChange={handleFilterChange}
             className="w-full sm:w-1/6 mb-2  sm:mr-2 px-3 py-2 border rounded text-center"
-          />
+            />
           <input
             type="date"
             name="fecha_fin"
@@ -168,6 +172,7 @@ const Page = () => {
           </div>
         </div>
       </section>
+            </div>
     </div>
   );
 };
