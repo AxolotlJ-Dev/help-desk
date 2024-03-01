@@ -4,10 +4,12 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { FaLock, FaUser } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
 const Login = () => {
+  const router = useRouter();
 
-  
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = (data) => {
@@ -18,27 +20,31 @@ const Login = () => {
     };
 
     axios
-      .post(
-        "https://localhost:7093/api/App_Login",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      .post("https://localhost:7093/api/App_Login", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
       .then((response) => {
-        localStorage.setItem("formularioData", JSON.stringify(response.data));
-        // console.log(response.data);
-        reset();
+        sessionStorage.setItem("Glb_id_usuario", JSON.stringify(response.data.id_usuario));
+        sessionStorage.setItem("Glb_id_empresa", JSON.stringify(response.data.id_empresa));
+        // console.log(response.data.regresa);
+        if (response.data.regresa > 0) {
+          router.push("/");
+          toast.success("Correcto")
+          reset();
+        } else {
+          toast.error(response.data.msj);
+          sessionStorage.setItem("Glb_id_usuario", "");
+          sessionStorage.setItem("Glb_id_empresa", "");
+        }
       })
       .catch((error) => {
         console.error("Error al iniciar sesión:", error);
+        sessionStorage.setItem("Glb_id_usuario", "");
+        sessionStorage.setItem("Glb_id_empresa", "");
       });
   };
-
-
-  
 
   return (
     <div className="h-screen md:flex">
@@ -90,7 +96,7 @@ const Login = () => {
               placeholder="Contraseña"
               {...register("pass", { required: true })}
             />
-          </div>         
+          </div>
           <button
             type="submit"
             className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2"
@@ -99,6 +105,7 @@ const Login = () => {
           </button>
         </form>
       </div>
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
