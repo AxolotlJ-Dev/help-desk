@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
@@ -9,11 +8,17 @@ import NavBar from "../components/NavBar";
 const Tables = () => {
   const router = useNavigate();
 
+  // const [user, setUser] = useState("");
+
   useEffect(() => {
     const Glb_id_usuario = sessionStorage.getItem("Glb_id_usuario");
-    // console.log(Glb_id_usuario);
-    
 
+    const Glb_nom_id_empresa = sessionStorage
+      .getItem("Glb_id_empresa")
+      .replace(/^"(.*)"$/, "$1");
+
+    // setUser(Glb_id_usuario);
+    setEmpresa(Glb_nom_id_empresa);
     if (
       Glb_id_usuario === "" ||
       Glb_id_usuario === undefined ||
@@ -21,9 +26,7 @@ const Tables = () => {
     ) {
       router("/helpdesk/Login");
     }
-
-    
-  }, [router]);
+  }, []);
 
   var fecha = new Date(); //Fecha actual
   var month = fecha.getMonth() + 1; //obteniendo mes
@@ -34,6 +37,7 @@ const Tables = () => {
   var value = year + "-" + month + "-" + day;
   var valueTwo = year + "-" + month + "-" + "01";
 
+  const [empresa, setEmpresa] = useState("");
   const [postData, setPostData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [filterCriteria, setFilterCriteria] = useState({
@@ -48,31 +52,40 @@ const Tables = () => {
     tipo_fecha: "SOLICITUD",
   });
 
-  const url = "https://localhost:7093/api/MostrarTareas";
+  const additionalData = {
+    id_empresa: empresa,
+  };
+
+  var url = "https://localhost:44384/WebServices/helpdesk.asmx/helpDesk_Sel";
 
   useEffect(() => {
+    const dataToSend = { ...filterCriteria, ...additionalData };
     axios
-      .post(url, filterCriteria)
+      .post(url, dataToSend)
       .then((response) => {
-        setPostData(response.data);
-        setFilteredData(response.data);
-        // console.log(response.data);
+        const jsonData = JSON.parse(response.data["d"]);
+        setPostData(jsonData);
+        setFilteredData(jsonData);
+        // console.log(jsonData);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+    // console.log(empresa)
+  }, [empresa, router]);
 
   const handleFilterChange = (e) => {
+    const dataToSend = { ...filterCriteria, ...additionalData };
     const { name, value } = e.target;
-    setFilterCriteria({ ...filterCriteria, [name]: value });
+    setFilterCriteria({ ...dataToSend, [name]: value });
   };
 
   const applyFilters = () => {
     axios
       .post(url, filterCriteria)
       .then((response) => {
-        setFilteredData(response.data);
+        const jsonData = JSON.parse(response.data["d"]);
+        setFilteredData(jsonData);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -184,30 +197,69 @@ const Tables = () => {
                     <th className="text-center px-4 py-3">Fecha</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white">
-                  {filteredData.map((response) => (
+
+                {/* { console.log(filteredData.length)}  */}
+                {/* {console.log(filteredData)} */}
+
+                {filteredData.length > 0 && filteredData[0].regresa > 0 ? (
+                  <tbody className="bg-white">
+                    {filteredData.map((jsonData) => (
+                      <tr
+                        className="hover:bg-gray-400 cursor-pointer"
+                        key={jsonData.id_helpdesk}
+                        onClick={() => {
+                          router(`/helpdesk/Tables/${jsonData.id_helpdesk}`);
+                        }}
+                      >
+                        <td className="text-center px-4 py-3">
+                          {jsonData.id_empresa}
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          {jsonData.pantalla}
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          {jsonData.estatus}
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          {FormatDate(jsonData.solicitud_fecha)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                ) : (
+                  <tbody className="bg-white">
+                    <tr className="flex justify-center">
+                      <td className="flex items-center justify-center h-20">
+                        <p className="text-center">Sin Datos</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                )}
+
+                {/* <tbody className="bg-white">
+                  {filteredData.map((jsonData) => (
                     <tr
                       className="hover:bg-gray-400 cursor-pointer"
-                      key={response.id_helpdesk}
+                      key={jsonData.id_helpdesk}
                       onClick={() => {
-                        router(`/helpdesk/Tables/${response.id_helpdesk}`);
+                        router(`/helpdesk/Tables/${jsonData.id_helpdesk}`);
                       }}
                     >
                       <td className="text-center px-4 py-3">
-                        {response.id_empresa}
+                        {jsonData.id_empresa}
                       </td>
                       <td className="text-center px-4 py-3">
-                        {response.pantalla}
+                        {jsonData.pantalla}
                       </td>
                       <td className="text-center px-4 py-3">
-                        {response.estatus}
+                        {jsonData.estatus}
                       </td>
                       <td className="text-center px-4 py-3">
-                        {FormatDate(response.solicitud_fecha)}
+                        {FormatDate(jsonData.solicitud_fecha)}
                       </td>
                     </tr>
                   ))}
-                </tbody>
+                </tbody> */}
               </table>
             </div>
           </div>

@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
-
+import { useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
 
 const Home = () => {
+  const navigate = useNavigate()
+
+  const [idUsuario, setIdUsuario] = useState("");
+
+  useEffect(() => {
+    const Glb_id_usuario = sessionStorage
+      .getItem("Glb_id_usuario")
+      // .replace(/^"(.*)"$/, "$1");
+
+      if ( Glb_id_usuario == null) {
+        navigate("/helpdesk/Login");
+      } else {
+        Glb_id_usuario.replace(/^"(.*)"$/, "$1");
+      }
+
+    if (
+      Glb_id_usuario === "" ||
+      Glb_id_usuario === undefined ||
+      Glb_id_usuario === null
+    ) {
+      navigate("/helpdesk/Login");
+    }
+    setIdUsuario(Glb_id_usuario);
+  }, [navigate]);
+
   return (
     <div>
       <NavBar />

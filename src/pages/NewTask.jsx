@@ -47,6 +47,7 @@ const NewTask = () => {
 
   const onSubmit = (data) => {
     const additionalData = {
+      id_helpdesk:0,
       estatus: "ABIERTO",
       atencion_id_usuario: "",
       solicitud_id_usuario: idUsuario,
@@ -57,7 +58,7 @@ const NewTask = () => {
     // console.log("Data to send:", dataToSend);
 
     const promise = axios.post(
-      "https://localhost:7093/api/CrearTarea",
+      "https://localhost:44384/WebServices/helpdesk.asmx/helpdesk_abc",
       dataToSend,
       {
         headers: {
@@ -68,9 +69,10 @@ const NewTask = () => {
     toast.promise(promise, {
       loading: "Cargando...",
       success: (success) => {
-        if (success.data.regresa > 0) {
-          processFile(success.data);
-          // console.log(success.data);
+        const jsonData = JSON.parse(success.data["d"]);
+        if (jsonData[0].regresa > 0) {
+          processFile(jsonData[0]);
+          console.log(jsonData[0]);
           reset();
           setTimeout(() => {
             navigate("/helpdesk/Tables");
@@ -78,7 +80,7 @@ const NewTask = () => {
 
           return "TAREA CREADA";
         } else {
-          return success.data.msj;
+          return jsonData[0].msj;
         }
       },
       error: (error) => "Error: " + error.toString(),
@@ -91,7 +93,7 @@ const NewTask = () => {
     // }
 
     // Imagenes
-
+    console.log(data)
     const file = data.foto[0];
 
     const readFileAsDataURL = (file) => {
@@ -118,12 +120,12 @@ const NewTask = () => {
         renglon: 1,
         foto: base64,
         id_usuario: idUsuario,
-        extencion: "jpg",
+        extension: "jpg",
       };
       // console.log(additionalDataImage);
 
       const promiseImg = axios.post(
-        "https://localhost:7093/api/insertarImagenes",
+        "https://localhost:44384/WebServices/helpdesk.asmx/INSERTA_IMAGEN_APP",
         additionalDataImage,
         {
           headers: {
@@ -134,23 +136,24 @@ const NewTask = () => {
       toast.promise(promiseImg, {
         loading: "Subiendo Imagen...",
         success: (success) => {
-          if (success.data.regresa > 0) {
+          const jsonData = JSON.parse(success.data["d"]);
+          if (jsonData[0].regresa > 0) {
             // console.log("s", data);
             return "Imagen subida";
           } else {
-            return success.data.msj;
+            return jsonData[0].msj;
           }
         },
         error: (error) => "Error: " + error.toString(),
       });
     };
 
-    //https://localhost:7093/api/insertarImagenes
   };
 
   useEffect(() => {
     if (idEmpresa) {
       const dataCrm = {
+        id_empresa: idEmpresa,
         grupo: "INCIDENCIAS",
         sw_todos: false,
       };
@@ -165,9 +168,10 @@ const NewTask = () => {
       };
       // Crm
       axios
-        .post("https://localhost:7093/api/CRM_Tipos", dataCrm)
+        .post("https://localhost:44384/WebServices/helpdesk.asmx/Tipos_Sel", dataCrm)
         .then((response) => {
-          setCrmTipos(response.data);
+          const jsonData = JSON.parse(response.data["d"]);
+          setCrmTipos(jsonData);
           // console.log(response.data);
         })
         .catch((error) => {
@@ -176,9 +180,10 @@ const NewTask = () => {
 
       // Empresa
       axios
-        .post("https://localhost:7093/api/Empresas", dataEmpresa)
+        .post("https://localhost:44384/WebServices/helpdesk.asmx/RecuperaEmpresas", dataEmpresa)
         .then((response) => {
-          setEmpresas(response.data);
+          const jsonData = JSON.parse(response.data["d"]);
+          setEmpresas(jsonData);
           // console.log(response.data);
         })
         .catch((error) => {
@@ -187,10 +192,11 @@ const NewTask = () => {
 
       // Sucursal
       axios
-        .post("https://localhost:7093/api/Sucursales", dataSucursal)
+        .post("https://localhost:44384/WebServices/helpdesk.asmx/RecuperaSucursales", dataSucursal)
         .then((response) => {
-          setSucursales(response.data);
-          // console.log(response.data);
+          const jsonData = JSON.parse(response.data["d"]);
+          setSucursales(jsonData);
+          // console.log(jsonData);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -252,16 +258,16 @@ const NewTask = () => {
             {/* Tipo */}
             <div>
               <label
-                htmlFor="Tipos"
+                htmlFor="tipo"
                 className="block text-sm font-semibold leading-6 text-black"
               >
                 Tipo
               </label>
               <div className="mt-2.5">
                 <select
-                  id="Tipos"
+                  id="tipo"
                   className="block w-full rounded-md border-0 px-3.5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset shadow-blue-500 ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
-                  {...register("Tipo", { required: true })}
+                  {...register("tipo", { required: true })}
                 >
                   {crmTipos.map((response, index) => (
                     <option key={index}>{response.valor}</option>

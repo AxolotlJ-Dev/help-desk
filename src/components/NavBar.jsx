@@ -23,7 +23,7 @@ const NavBar = () => {
   const CerrarSesion = () => {
     sessionStorage.setItem("Glb_id_usuario", "");
     sessionStorage.setItem("Glb_id_empresa", "");
-    navigate('helpdesk/Login');
+    navigate('/helpdesk/Login');
   };
 
   return (

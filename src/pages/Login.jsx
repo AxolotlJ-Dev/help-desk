@@ -11,34 +11,39 @@ const Login = () => {
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = (data) => {
+    console.log(data)
     const formData = {
-      id_empresa: "CRECE",
-      id_usuario: data.id_usuario,
-      pass: data.pass,
+            id_empresa: "ICC",
+            app: "VOficina.Integral",
+            id_usuario: data.id_usuario,
+            pass: data.pass,
+            Version: "5.0",
     };
 
     axios
-      .post("https://localhost:7093/api/App_Login", formData, {
+      .post("https://localhost:44384/WebServices/helpdesk.asmx/App_Login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
       })
       .then((response) => {
+        let jsonData = JSON.parse(response.data["d"]);
+        jsonData = jsonData[0]
         sessionStorage.setItem(
           "Glb_id_usuario",
-          JSON.stringify(response.data.id_usuario)
+          JSON.stringify(jsonData.id_usuario)
         );
         sessionStorage.setItem(
           "Glb_id_empresa",
-          JSON.stringify(response.data.id_empresa)
+          JSON.stringify(jsonData.nom_id_empresa)
         );
         // console.log(response.data.regresa);
-        if (response.data.regresa > 0) {
+        if (jsonData.regresa > 0) {
           router("/helpdesk/");
           toast.success("Bienvenido!!");
           reset();
         } else {
-          toast.error(response.data.msj);
+          toast.error(jsonData.msj);
           sessionStorage.setItem("Glb_id_usuario", "");
           sessionStorage.setItem("Glb_id_empresa", "");
         }

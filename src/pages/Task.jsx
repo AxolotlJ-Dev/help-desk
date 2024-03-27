@@ -37,17 +37,16 @@ const Page = () => {
   const [mensajes, setMensajes] = useState([]);
   const [sendMensaje, setSendMensaje] = useState();
 
-  const url = "https://localhost:7093/api/MostrarTareas";
-
+  const url = "https://localhost:44384/WebServices/helpdesk.asmx/helpDesk_Sel";
   const requestData = {
+    id_empresa: idUsuarioActual ,
     id_helpdesk: params,
-    id_empresa: "",
     modulo: "",
     tipo: "",
     estatus: "",
     solicitud_id_usuario: "",
     fecha_inicio: "1900-01-01",
-    fecha_fin: "2026-01-31",
+    fecha_fin: "2030-01-31",
     tipo_fecha: "SOLICITUD",
   };
 
@@ -55,21 +54,25 @@ const Page = () => {
     axios
       .post(url, requestData)
       .then((response) => {
-        setPostData(response.data[0]);
-        // console.log(response.data[0]);
+        let jsonData = JSON.parse(response.data["d"]);
+        jsonData = jsonData[0]
+        setPostData(jsonData);
+        // console.log(jsonData);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [requestData]);
+  }, [user, router]);
 
   // mensajes
-  const urlMensaje = "https://localhost:7093/api/MostrarMensaje";
+  const urlMensaje = "https://localhost:44384/WebServices/helpdesk.asmx/HelpDeskdet_Sel";
 
   const requestDataMensajes = {
+    id_empresa: user,
     id_helpdesk: params,
     id_usuario: idUsuarioActual,
   };
+  // console.log(idUsuarioActual)
 
   // mensajes
   useEffect(() => {
@@ -77,8 +80,9 @@ const Page = () => {
       axios
         .post(urlMensaje, requestDataMensajes)
         .then((response) => {
-          setMensajes(response.data);
-          // console.log(response.data);
+          const jsonData = JSON.parse(response.data["d"]);
+          setMensajes(jsonData);
+          // console.log(jsonData);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -86,12 +90,13 @@ const Page = () => {
     }, 1000);
 
     return () => clearInterval(IntervaId);
-  }, [sendMensaje]);
+  }, [user, router]);
 
   // send menssage
   const onSubmit = (data) => {
     const additionalData = {
       id_helpdesk: params,
+      id_empresa: user,
       id_helpdeskdet: 0,
       tipo: "",
       id_usuario: idUsuarioActual,
@@ -103,7 +108,7 @@ const Page = () => {
     // console.log("Data to send:", dataToSend);
 
     axios
-      .post("https://localhost:7093/api/InsertarMensaje", dataToSend, {
+      .post("https://localhost:44384/WebServices/helpdesk.asmx/helpdeskdet_abc", dataToSend, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -258,9 +263,10 @@ const Page = () => {
                     <div>
                       <img
                         className=" bg-blue-700 h-max-[500px] w-max-[500px] rounded-xl "
-                        src={`data:image/${postData.extencion};base64,${postData.foto}`}
+                        src={`data:image/${postData.extension};base64,${postData.foto}`}
                         alt="imagen"
                       />
+
                       {/* <a
                         href={`data:image/${postData.extension};base64,${postData.foto}`}
                         target="_blank"

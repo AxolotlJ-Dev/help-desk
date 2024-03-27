@@ -19,7 +19,7 @@ export default function App() {
           
           <Route path="/helpdesk/Tables" element={<Tables />} />
           <Route path="/helpdesk/Tables/:params" element={<Task />} />
-          <Route path="/helpdesk/" element={<Error />} />
+          <Route path="/helpdesk/*" element={<Error />} />
         </Routes>
     </BrowserRouter>
   )
