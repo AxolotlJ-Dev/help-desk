@@ -58,7 +58,7 @@ const NewTask = () => {
     // console.log("Data to send:", dataToSend);
 
     const promise = axios.post(
-      "https://localhost:44384/WebServices/helpdesk.asmx/helpdesk_abc",
+      "https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/helpdesk_abc",
       dataToSend,
       {
         headers: {
@@ -125,7 +125,7 @@ const NewTask = () => {
       // console.log(additionalDataImage);
 
       const promiseImg = axios.post(
-        "https://localhost:44384/WebServices/helpdesk.asmx/INSERTA_IMAGEN_APP",
+        "https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/INSERTA_IMAGEN_APP",
         additionalDataImage,
         {
           headers: {
@@ -168,7 +168,7 @@ const NewTask = () => {
       };
       // Crm
       axios
-        .post("https://localhost:44384/WebServices/helpdesk.asmx/Tipos_Sel", dataCrm)
+        .post("https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/Tipos_Sel", dataCrm)
         .then((response) => {
           const jsonData = JSON.parse(response.data["d"]);
           setCrmTipos(jsonData);
@@ -180,7 +180,7 @@ const NewTask = () => {
 
       // Empresa
       axios
-        .post("https://localhost:44384/WebServices/helpdesk.asmx/RecuperaEmpresas", dataEmpresa)
+        .post("https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/RecuperaEmpresas", dataEmpresa)
         .then((response) => {
           const jsonData = JSON.parse(response.data["d"]);
           setEmpresas(jsonData);
@@ -192,7 +192,7 @@ const NewTask = () => {
 
       // Sucursal
       axios
-        .post("https://localhost:44384/WebServices/helpdesk.asmx/RecuperaSucursales", dataSucursal)
+        .post("https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/RecuperaSucursales", dataSucursal)
         .then((response) => {
           const jsonData = JSON.parse(response.data["d"]);
           setSucursales(jsonData);
@@ -227,6 +227,7 @@ const NewTask = () => {
                   className="block w-full rounded-md border-0 px-3.5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset shadow-blue-500 ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
                   {...register("id_empresa", { required: true })}
                 >
+                  <option value="" disabled defaultValue>Selecciona una empresa</option>
                   {empresas.map((response, index) => (
                     <option key={index}>{response.id_empresa}</option>
                   ))}
@@ -248,6 +249,7 @@ const NewTask = () => {
                   className="block w-full rounded-md border-0 px-3.5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset shadow-blue-500 ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
                   {...register("id_sucursal", { required: true })}
                 >
+                   <option value="" disabled defaultValue>Selecciona una sucursal</option>
                   {sucursales.map((response, index) => (
                     <option key={index}>{response.id_sucursal}</option>
                   ))}
@@ -269,6 +271,7 @@ const NewTask = () => {
                   className="block w-full rounded-md border-0 px-3.5 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset shadow-blue-500 ring-blue-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-400 sm:text-sm sm:leading-6"
                   {...register("tipo", { required: true })}
                 >
+                  <option value="" disabled defaultValue>Selecciona el tipo</option>
                   {crmTipos.map((response, index) => (
                     <option key={index}>{response.valor}</option>
                   ))}

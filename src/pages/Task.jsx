@@ -7,8 +7,10 @@ import { FaCheck } from "react-icons/fa";
 import NavBar from "../components/NavBar";
 
 const Page = () => {
+  const navigate = useNavigate()
   const {params} = useParams()
-
+  
+  const [idEmpresa, SetidEmpresa] = useState("");
   const [user, setUser] = useState("");
 
   const router = useNavigate();
@@ -17,17 +19,22 @@ const Page = () => {
     const Glb_id_usuario = sessionStorage
       .getItem("Glb_id_usuario")
       .replace(/^"(.*)"$/, "$1");
-    setUser(Glb_id_usuario);
-    // console.log(Glb_id_usuario);
 
     if (
       Glb_id_usuario === "" ||
       Glb_id_usuario === undefined ||
       Glb_id_usuario === null
     ) {
-      router("/helpdesk/Login");
+      navigate("/helpdesk/Login");
     }
-  }, [router]);
+
+    const Glb_id_empresa = sessionStorage
+      .getItem("Glb_id_empresa")
+      .replace(/^"(.*)"$/, "$1");
+
+    SetidEmpresa(Glb_id_empresa);
+    setUser(Glb_id_usuario);
+  }, [navigate]);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -37,9 +44,9 @@ const Page = () => {
   const [mensajes, setMensajes] = useState([]);
   const [sendMensaje, setSendMensaje] = useState();
 
-  const url = "https://localhost:44384/WebServices/helpdesk.asmx/helpDesk_Sel";
+  const url = "https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/helpDesk_Sel";
   const requestData = {
-    id_empresa: idUsuarioActual ,
+    id_empresa: idEmpresa ,
     id_helpdesk: params,
     modulo: "",
     tipo: "",
@@ -65,10 +72,10 @@ const Page = () => {
   }, [user, router]);
 
   // mensajes
-  const urlMensaje = "https://localhost:44384/WebServices/helpdesk.asmx/HelpDeskdet_Sel";
+  const urlMensaje = "https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/HelpDeskdet_Sel";
 
   const requestDataMensajes = {
-    id_empresa: user,
+    id_empresa: idEmpresa,
     id_helpdesk: params,
     id_usuario: idUsuarioActual,
   };
@@ -96,7 +103,7 @@ const Page = () => {
   const onSubmit = (data) => {
     const additionalData = {
       id_helpdesk: params,
-      id_empresa: user,
+      id_empresa: idEmpresa,
       id_helpdeskdet: 0,
       tipo: "",
       id_usuario: idUsuarioActual,
@@ -108,7 +115,7 @@ const Page = () => {
     // console.log("Data to send:", dataToSend);
 
     axios
-      .post("https://localhost:44384/WebServices/helpdesk.asmx/helpdeskdet_abc", dataToSend, {
+      .post("https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/helpdeskdet_abc", dataToSend, {
         headers: {
           "Content-Type": "application/json",
         },

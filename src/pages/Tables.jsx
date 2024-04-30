@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { IoReload } from "react-icons/io5";
 import { MdAddToPhotos } from "react-icons/md";
@@ -8,8 +8,21 @@ import NavBar from "../components/NavBar";
 const Tables = () => {
   const router = useNavigate();
 
-  // const [user, setUser] = useState("");
+  const [empresa, setEmpresa] = useState("");
+  const [idEmpresa, setIdEmpresa] = useState([]);
+  const [postData, setPostData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [filterCriteria, setFilterCriteria] = useState({
+    id_helpdesk: 0,
+    id_empresa: "",
+    modulo: "",
+    tipo: "",
+    estatus: "",
+    solicitud_id_usuario: "",
+    tipo_fecha: "SOLICITUD",
+  });
 
+  // const [user, setUser] = useState("");
   useEffect(() => {
     const Glb_id_usuario = sessionStorage.getItem("Glb_id_usuario");
 
@@ -37,26 +50,14 @@ const Tables = () => {
   var value = year + "-" + month + "-" + day;
   var valueTwo = year + "-" + month + "-" + "01";
 
-  const [empresa, setEmpresa] = useState("");
-  const [postData, setPostData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [filterCriteria, setFilterCriteria] = useState({
-    id_helpdesk: 0,
-    id_empresa: "",
-    modulo: "",
-    tipo: "",
-    estatus: "",
-    solicitud_id_usuario: "",
-    fecha_inicio: valueTwo,
-    fecha_fin: value,
-    tipo_fecha: "SOLICITUD",
-  });
-
   const additionalData = {
     id_empresa: empresa,
+    fecha_inicio: valueTwo,
+    fecha_fin: value,
   };
 
-  var url = "https://localhost:44384/WebServices/helpdesk.asmx/helpDesk_Sel";
+  var url =
+    "https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/helpDesk_Sel";
 
   useEffect(() => {
     const dataToSend = { ...filterCriteria, ...additionalData };
@@ -71,7 +72,29 @@ const Tables = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-    // console.log(empresa)
+
+    // Empresa
+
+    const dataEmpresa = {
+      id_empresa: empresa,
+    };
+
+    axios
+      .post(
+        "https://voficinatrafico.iccreativa.com/apihelpdesk/webservices/helpdesk.asmx/RecuperaEmpresas",
+        dataEmpresa
+      )
+      .then((response) => {
+        const jsonData = JSON.parse(response.data["d"]);
+        setIdEmpresa(jsonData);
+        
+        // console.log(jsonData[0].id_empresa);
+
+        // console.log(empresa);
+      })
+      .catch((error) => {
+        idEmpresa.error("Error fetching data:", error);
+      });
   }, [empresa, router]);
 
   const handleFilterChange = (e) => {
@@ -91,10 +114,6 @@ const Tables = () => {
         console.error("Error fetching data:", error);
       });
   };
-
-  // const handleRefresh = () => {
-  //   window.location.reload();
-  // };
 
   const FormatDate = (fecha) => {
     var d = new Date(fecha);
@@ -129,14 +148,38 @@ const Tables = () => {
       <div className="flex-1 text-2md font-bold p-4 md:ml-80 ">
         <section className="container mx-auto p-6 font-mono">
           <div className="flex flex-wrap mb-4">
-            <input
+            {empresa === "ICC" ? (
+              <select
+              name="id_empresa"
+              value={filterCriteria.id_usuario}
+              onChange={handleFilterChange}
+              className="w-full sm:w-1/6 mb-2 sm:mr-2 px-3 py-2 border rounded text-center"
+              defaultValue="ICC"
+            >
+              <option key="ICC" value="ICC" disabled defaultValue>Selecciona una empresa</option>
+              {idEmpresa.map((response, index) => (
+                <option key={index} value={response.id_empresa}>{response.id_empresa}</option>
+              ))}
+            </select>            
+            ) : (
+              <input
+                type="text"
+                name="id_empresa"
+                value={empresa}
+                onChange={handleFilterChange}
+                className="w-full sm:w-1/6 mb-2  sm:mr-2 px-3 py-2 border rounded text-center"
+                placeholder={filterCriteria.id_empresa}
+                disabled
+              />
+            )}
+            {/* <input
               type="text"
               name="id_empresa"
               value={filterCriteria.id_empresa}
               onChange={handleFilterChange}
               className="w-full sm:w-1/6 mb-2  sm:mr-2 px-3 py-2 border rounded text-center"
               placeholder="ID Empresa"
-            />
+            /> */}
             <input
               type="text"
               name="solicitud_id_usuario"

@@ -7,7 +7,7 @@ import { CiLogout } from "react-icons/ci";
 import { FaCircleInfo } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 const NavBar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
@@ -23,7 +23,7 @@ const NavBar = () => {
   const CerrarSesion = () => {
     sessionStorage.setItem("Glb_id_usuario", "");
     sessionStorage.setItem("Glb_id_empresa", "");
-    navigate('/helpdesk/Login');
+    navigate("/helpdesk/Login");
   };
 
   return (
@@ -77,7 +77,7 @@ const NavBar = () => {
             </div>
           </NavLink>
           <div className="my-4 bg-gray-600 h-[1px]"></div>
-          <div
+          {/* <div
             className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
             onClick={dropdown}
           >
@@ -90,8 +90,8 @@ const NavBar = () => {
                 <i className="bi bi-chevron-down"></i>
               </span>
             </div>
-          </div>
-          <div
+          </div> */}
+          {/* <div
             className="text-left text-sm mt-2 w-4/5 mx-auto text-gray-200 font-bold"
             id="submenu"
           >
@@ -104,7 +104,7 @@ const NavBar = () => {
             <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
               business
             </h1>
-          </div>
+          </div> */}
           <div
             onClick={CerrarSesion}
             className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
